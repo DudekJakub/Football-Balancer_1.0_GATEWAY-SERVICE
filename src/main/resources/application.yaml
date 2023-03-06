@@ -1,0 +1,40 @@
+server:
+  port: 8083
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:8761/eureka/
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**,/v3/api-docs/auth-service/**
+        - id: monolith-service
+          uri: lb://monolith-service
+          predicates:
+            - Path=/api/**,/v3/api-docs/monolith-service/**
+  application:
+    name: gateway-service
+  main:
+    web-application-type: reactive
+
+jwt:
+  token:
+    signature: secretKeyForFootballBalancerTestPassword
+
+logging:
+  level:
+    org.springframework.security: debug
