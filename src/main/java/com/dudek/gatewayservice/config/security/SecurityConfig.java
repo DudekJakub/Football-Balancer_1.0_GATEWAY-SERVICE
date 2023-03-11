@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .pathMatchers("/webjars/**").permitAll()
                 .pathMatchers("/swagger-ui.html/**").permitAll()
                 .pathMatchers("/v3/**").permitAll()
+                .pathMatchers("/api/notification/**").permitAll()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/**").authenticated()
                 .anyExchange().authenticated();

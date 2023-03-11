@@ -26,6 +26,10 @@ spring:
           uri: lb://monolith-service
           predicates:
             - Path=/api/**,/v3/api-docs/monolith-service/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/**
   application:
     name: gateway-service
   main:
