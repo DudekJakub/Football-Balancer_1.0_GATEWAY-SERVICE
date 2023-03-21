@@ -17,19 +17,29 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      global-filter:
+        websocket-routing:
+          enabled: true
       routes:
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/auth/**,/v3/api-docs/auth-service/**
-        - id: notification-service
-          uri: lb://notification-service
+        - id: notification-chat-service-websocket
+          uri: lb://notification-chat-service
           predicates:
-            - Path=/api/notification/**
+            - Path=/websocket/api/notification/stream/**
+          filters:
+            - RewritePath=/websocket/(?<remains>.*), /$\{remains}
+        - id: notification-chat-service
+          uri: lb://notification-chat-service
+          predicates:
+            - Path=/api/notification/from-db/**
         - id: monolith-service
           uri: lb://monolith-service
           predicates:
             - Path=/api/**,/v3/api-docs/monolith-service/**
+
   application:
     name: gateway-service
   main:
@@ -42,3 +52,4 @@ jwt:
 logging:
   level:
     org.springframework.security: debug
+    com.dudek.gatewayservice: debug
