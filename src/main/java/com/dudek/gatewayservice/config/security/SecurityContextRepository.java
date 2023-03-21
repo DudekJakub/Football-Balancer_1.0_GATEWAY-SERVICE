@@ -1,5 +1,7 @@
 package com.dudek.gatewayservice.config.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,11 +13,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Component
 public class SecurityContextRepository implements ServerSecurityContextRepository {
 
     private static final String TOKEN_PREFIX = "Bearer ";
-
+    private final Logger logger = LoggerFactory.getLogger(SecurityContextRepository.class);
     private final AuthenticationManager authenticationManager;
 
     public SecurityContextRepository(final AuthenticationManager authenticationManager) {
@@ -30,13 +34,16 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
     @Override
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         ServerHttpRequest request = exchange.getRequest();
+        String upgradeHeader = request.getHeaders().getFirst(HttpHeaders.UPGRADE);
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         String authToken = null;
 
         if (authHeader != null && authHeader.startsWith(TOKEN_PREFIX)) {
             authToken = authHeader.replace(TOKEN_PREFIX, "");
+        } else if (upgradeHeader != null && Objects.equals(upgradeHeader, "websocket")) {
+            authToken = request.getQueryParams().getFirst(TOKEN_PREFIX.replace(" ", ""));
         } else {
-            System.out.println("Couldn't find bearer string, will ignore the header!");
+            logger.debug("Couldn't find bearer string from request [{}]. Will ignore the header!", request.getPath());
         }
 
         if (authToken != null) {
