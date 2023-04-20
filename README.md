@@ -1,8 +1,6 @@
 # Welcome to Football Balancer application!
 
-## Stage: `WORK-IN-PROGRESS`
-
-#### Description:
+## Description:
 This is one of the microservices which is part of the whole Football-Balancer project! 
 <br/>
 Its main responsibility is to provide single entrance point for the whole application as well as load-balancer in case of more then one instances of specific microservice.
