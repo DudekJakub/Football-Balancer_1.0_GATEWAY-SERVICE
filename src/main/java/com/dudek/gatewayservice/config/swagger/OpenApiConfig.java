@@ -4,6 +4,8 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.SwaggerUiConfigParameters;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cloud.gateway.route.RouteDefinition;
@@ -34,13 +36,18 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI api() {
         return new OpenAPI()
-                .components(new Components())
+                .components(new Components()
+                        .addSecuritySchemes("Bearer Authentication", new io.swagger.v3.oas.models.security.SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")))
                 .info(new Info()
                         .title("Spring Cloud Gateway Service API")
                         .description("This API provides aggregated single entry point for all microservices.")
                         .version("0.5.0")
                         .contact(new Contact()
                                 .name("Jakub Dudek")
-                                .email("jakub.dudek94@gmail.com")));
+                                .email("jakub.dudek94@gmail.com")))
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"));
     }
 }
